@@ -1,0 +1,27 @@
+{
+  "name": "ir-msat-frontend",
+  "version": "1.0.0",
+  "description": "Vue.js frontend for MSAT Case Management with Alberta Design System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src/**/*.{js,vue}"
+  },
+  "dependencies": {
+    "@abgov/web-components": "^1.39.3",
+    "axios": "^1.6.5",
+    "chart.js": "^4.5.1",
+    "leaflet": "^1.9.4",
+    "vue": "^3.4.15",
+    "vue-chartjs": "^5.3.3",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.20.1",
+    "vite": "^5.0.11"
+  }
+}

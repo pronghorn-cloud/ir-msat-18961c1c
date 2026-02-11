@@ -24,10 +24,12 @@ const API_PREFIX = process.env.API_PREFIX || '/api';
 app.use(helmet());
 
 // CORS configuration
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [process.env.FRONTEND_URL].filter(Boolean)
+  : ['http://localhost:5173'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL
-    : 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -43,16 +45,6 @@ app.use(morgan('dev'));
 
 // API routes
 app.use(API_PREFIX, apiRoutes);
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../../frontend/dist');
-  app.use(express.static(frontendPath));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  });
-}
 
 // Health check endpoint
 app.get('/health', (req, res) => {

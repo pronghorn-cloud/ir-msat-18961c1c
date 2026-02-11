@@ -1,0 +1,43 @@
+{
+  "name": "ir-msat",
+  "version": "1.0.0",
+  "description": "MSAT System & Website Modernization - Case Management and Public Portal",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "keywords": [
+    "government-of-alberta",
+    "goa",
+    "msat",
+    "design-system",
+    "vue",
+    "node",
+    "express"
+  ],
+  "author": "Government of Alberta",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "mammoth": "^1.11.0",
+    "mdb-reader": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

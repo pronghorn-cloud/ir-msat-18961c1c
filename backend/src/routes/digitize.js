@@ -4,7 +4,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { listBatches, getBatchDetail, lookupAppeal, createBatch } from '../controllers/digitizeController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +25,7 @@ const upload = multer({
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, authorize('staff', 'admin'));
 
 // GET /api/digitize/batches - List all batches
 router.get('/batches', listBatches);

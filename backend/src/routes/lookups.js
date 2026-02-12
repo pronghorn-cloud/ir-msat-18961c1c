@@ -1,11 +1,11 @@
 import express from 'express';
 import { getSettlements, getIssueTypes, getAppealStatuses, getAppealStages, getStaffList, getBoardMembers } from '../controllers/lookupsController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// All lookup routes require authentication
-router.use(authenticate);
+// Lookups needed by staff, admin, and board members (for appeal views)
+router.use(authenticate, authorize('staff', 'admin', 'board_member'));
 
 router.get('/settlements', getSettlements);
 router.get('/issue-types', getIssueTypes);

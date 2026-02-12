@@ -1,10 +1,10 @@
 import express from 'express';
 import { listSubmissions, getSubmissionById, reviewSubmission } from '../controllers/submissionsController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, authorize('staff', 'admin'));
 
 // GET /api/submissions?status=&limit=&offset=
 router.get('/', listSubmissions);

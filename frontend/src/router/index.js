@@ -48,19 +48,7 @@ const routes = [
     meta: { hideNav: true }
   },
 
-  // Protected routes
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/annual-report',
-    name: 'AnnualReport',
-    component: () => import('@/views/AnnualReport.vue'),
-    meta: { requiresAuth: true }
-  },
+  // Protected routes — any authenticated user
   {
     path: '/profile',
     name: 'Profile',
@@ -68,100 +56,102 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Clients routes
+  // Staff & Admin only
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/views/Dashboard.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
+  },
+  {
+    path: '/annual-report',
+    name: 'AnnualReport',
+    component: () => import('@/views/AnnualReport.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
+  },
   {
     path: '/clients',
     name: 'Clients',
     component: () => import('@/views/ClientsList.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
-
-  // Organizations routes
   {
     path: '/organizations',
     name: 'Organizations',
     component: () => import('@/views/OrganizationsList.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
-
-  // Appeals routes
-  {
-    path: '/appeals',
-    name: 'Appeals',
-    component: () => import('@/views/Appeals.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/appeals/new',
-    name: 'AppealNew',
-    component: () => import('@/views/AppealNew.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/appeals/:id',
-    name: 'AppealDetail',
-    component: () => import('@/views/AppealDetail.vue'),
-    meta: { requiresAuth: true }
-  },
-
-  // My Cases (external user case status)
-  {
-    path: '/my-cases',
-    name: 'MyCases',
-    component: () => import('@/views/MyCases.vue'),
-    meta: { requiresAuth: true }
-  },
-
-  // Submissions (staff review of public appeals)
   {
     path: '/submissions',
     name: 'Submissions',
     component: () => import('@/views/SubmissionsList.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
-
-  // Documents search route
   {
     path: '/documents',
     name: 'Documents',
     component: () => import('@/views/DocumentSearch.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
-
-  // Digitize routes
   {
     path: '/digitize',
     name: 'Digitize',
     component: () => import('@/views/DigitizeFiles.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
-
-  // LAP routes
   {
     path: '/lap',
     name: 'LapApplications',
     component: () => import('@/views/LapApplications.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
   {
     path: '/lap/map',
     name: 'LapMap',
     component: () => import('@/views/LapMap.vue'),
-    meta: { requiresAuth: true }
-  },
-
-  // Admin routes
-  {
-    path: '/admin/users',
-    name: 'UserManagement',
-    component: () => import('@/views/UserManagement.vue'),
-    meta: { requiresAuth: true, requiresRole: 'admin' }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
   },
   {
     path: '/admin/content',
     name: 'ContentManager',
     component: () => import('@/views/ContentManager.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
+  },
+
+  // Staff, Admin & Board Member
+  {
+    path: '/appeals',
+    name: 'Appeals',
+    component: () => import('@/views/Appeals.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff', 'board_member'] }
+  },
+  {
+    path: '/appeals/new',
+    name: 'AppealNew',
+    component: () => import('@/views/AppealNew.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff'] }
+  },
+  {
+    path: '/appeals/:id',
+    name: 'AppealDetail',
+    component: () => import('@/views/AppealDetail.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin', 'staff', 'board_member'] }
+  },
+
+  // Public user only
+  {
+    path: '/my-cases',
+    name: 'MyCases',
+    component: () => import('@/views/MyCases.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['user'] }
+  },
+
+  // Admin only
+  {
+    path: '/admin/users',
+    name: 'UserManagement',
+    component: () => import('@/views/UserManagement.vue'),
+    meta: { requiresAuth: true, allowedRoles: ['admin'] }
   }
 ];
 
@@ -170,14 +160,22 @@ const router = createRouter({
   routes
 });
 
+// Role-based default landing page
+function getDefaultRoute(role) {
+  if (role === 'admin' || role === 'staff') return '/dashboard';
+  if (role === 'board_member') return '/appeals';
+  if (role === 'user') return '/my-cases';
+  return '/';
+}
+
 // Navigation guard
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !authState.isAuthenticated) {
     next({ name: 'Login', query: { redirect: to.fullPath } });
-  } else if (to.meta.requiresRole && authState.user?.role !== to.meta.requiresRole) {
-    next({ name: 'Dashboard' });
+  } else if (to.meta.allowedRoles && !to.meta.allowedRoles.includes(authState.user?.role)) {
+    next(getDefaultRoute(authState.user?.role));
   } else if (to.name === 'Login' && authState.isAuthenticated) {
-    next({ name: 'Dashboard' });
+    next(getDefaultRoute(authState.user?.role));
   } else {
     next();
   }

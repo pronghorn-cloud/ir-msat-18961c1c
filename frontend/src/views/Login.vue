@@ -127,9 +127,11 @@ const handleLogin = async () => {
       } else if (role === 'staff') {
         router.push('/dashboard');
       } else if (role === 'board_member') {
-        router.push('/dashboard');
+        router.push('/appeals');
+      } else if (role === 'user') {
+        router.push('/my-cases');
       } else {
-        router.push('/dashboard');
+        router.push('/');
       }
     }
   } catch (err) {

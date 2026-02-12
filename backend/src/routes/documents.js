@@ -1,10 +1,10 @@
 import express from 'express';
 import { searchDocuments, listCategories, listAppealsWithDocs, listSettlementsWithDocs } from '../controllers/documentSearchController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, authorize('staff', 'admin'));
 
 // GET /api/documents/categories - List distinct categories
 router.get('/categories', listCategories);

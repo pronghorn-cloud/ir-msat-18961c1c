@@ -1,10 +1,10 @@
 import express from 'express';
 import { searchClients, listClients, getClientById, createClient, updateClient } from '../controllers/clientsController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, authorize('staff', 'admin'));
 
 // GET /api/clients/search?q=name_or_member_id
 router.get('/search', searchClients);

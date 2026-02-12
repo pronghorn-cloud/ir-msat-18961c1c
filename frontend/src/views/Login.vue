@@ -70,6 +70,8 @@
           <ul>
             <li><strong>Admin:</strong> admin@msat.gov.ab.ca / admin123</li>
             <li><strong>Staff:</strong> staff@msat.gov.ab.ca / staff123</li>
+            <li><strong>Board Member:</strong> board@msat.gov.ab.ca / board123</li>
+            <li><strong>Public User:</strong> user@example.com / user123</li>
           </ul>
         </div>
       </div>

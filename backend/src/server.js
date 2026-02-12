@@ -21,7 +21,21 @@ const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 // Security middleware
-app.use(helmet());
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", frontendUrl],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      fontSrc: ["'self'", "data:"],
+    }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: false,
+}));
 
 // CORS configuration
 const allowedOrigins = process.env.NODE_ENV === 'production'
